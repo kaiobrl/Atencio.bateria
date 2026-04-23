@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baterias Atencio - Sistema de Vendas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: #1a1a1a;
+            color: #ffc107;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .card h2 {
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+            border-bottom: 2px solid #ffc107;
+            padding-bottom: 0.5rem;
+        }
+        
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .produto {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .produto:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .produto img {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 0.5rem;
+        }
+        
+        .produto h3 {
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        .produto .preco {
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+        }
+        
+        button {
+            background: #ffc107;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #ffb300;
+        }
+        
+        .carrinho-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .carrinho-item button {
+            width: auto;
+            padding: 0.3rem 0.6rem;
+            background: #d32f2f;
+            color: white;
+        }
+        
+        .total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: right;
+            margin: 1rem 0;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.6rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn-finalizar {
+            background: #2e7d32;
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        .btn-finalizar:hover {
+            background: #1b5e20;
+        }
+        
+        .badge {
+            background: #d32f2f;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔋 Baterias Atencio</h1>
+        <p>Sistema de Vendas Online</p>
+    </div>
+
+    <div class="container">
+        <div>
+            <div class="card">
+                <h2>Catálogo de Baterias</h2>
+                <div class="produtos-grid" id="lista-produtos"></div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <h2>Carrinho <span class="badge" id="qtd-carrinho">0</span></h2>
+                <div id="itens-carrinho">
+                    <p>Carrinho vazio</p>
+                </div>
+                <div class="total">Total: R$ <span id="total">0.00</span></div>
+            </div>
+
+            <div class="card">
+                <h2>Dados do Cliente</h2>
+                <input type="text" id="nome" placeholder="Nome completo" required>
+                <input type="tel" id="telefone" placeholder="WhatsApp" required>
+                <input type="text" id="carro" placeholder="Modelo do carro" required>
+                <select id="pagamento">
+                    <option value="">Forma de pagamento</option>
+                    <option value="PIX">PIX</option>
+                    <option value="Cartão">Cartão em até 6x</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
+                <button class="btn-finalizar" onclick="finalizarVenda()">Finalizar Pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const produtos = [
+            { id: 1, nome: "Moura 60Ah", preco: 389.90, amperagem: "60Ah", img: "https://i0.wp.com/grubaterias.com.br/wp-content/uploads/2021/05/bateria-automotiva-pioneiro-180ah-B180PD.jpg?fit=1200%2C1200&quality=89&ssl=1" },
+            { id: 2, nome: "Heliar 45Ah", preco: 299.90, amperagem: "45Ah", img: "https://i0.wp.com/grubaterias.com.br/wp-content/uploads/2021/05/bateria-automotiva-pioneiro-180ah-B180PD.jpg?fit=1200%2C1200&quality=89&ssl=1" },
+            { id: 3, nome: "Zetta 70Ah", preco: 449.90, amperagem: "70Ah", img: "https://i0.wp.com/grubaterias.com.br/wp-content/uploads/2021/05/bateria-automotiva-pioneiro-180ah-B180PD.jpg?fit=1200%2C1200&quality=89&ssl=1" },
+            { id: 4, nome: "Moura 90Ah", preco: 589.90, amperagem: "90Ah", img: "https://i0.wp.com/grubaterias.com.br/wp-content/uploads/2021/05/bateria-automotiva-pioneiro-180ah-B180PD.jpg?fit=1200%2C1200&quality=89&ssl=1" },
+            { id: 5, nome: "Bosch 50Ah", preco: 349.90, amperagem: "50Ah", img: "https://i0.wp.com/grubaterias.com.br/wp-content/uploads/2021/05/bateria-automotiva-pioneiro-180ah-B180PD.jpg?fit=1200%2C1200&quality=89&ssl=1" },
+            { id: 6, nome: "ACDelco 75Ah", preco: 479.90, amperagem: "75Ah", img: "https://i0.wp.com/grubaterias.com.br/wp-content/uploads/2021/05/bateria-automotiva-pioneiro-180ah-B180PD.jpg?fit=1200%2C1200&quality=89&ssl=1" }
+        ];
+
+        let carrinho = [];
+
+        function renderProdutos() {
+            const lista = document.getElementById('lista-produtos');
+            lista.innerHTML = produtos.map(p => `
+                <div class="produto">
+                    <img src="${p.img}" alt="${p.nome}">
+                    <h3>${p.nome}</h3>
+                    <p>${p.amperagem}</p>
+                    <div class="preco">R$ ${p.preco.toFixed(2)}</div>
+                    <button onclick="addCarrinho(${p.id})">Adicionar</button>
+                </div>
+            `).join('');
+        }
+
+        function addCarrinho(id) {
+            const produto = produtos.find(p => p.id === id);
+            const itemExistente = carrinho.find(item => item.id === id);
+            
+            if (itemExistente) {
+                itemExistente.qtd++;
+            } else {
+                carrinho.push({ ...produto, qtd: 1 });
+            }
+            renderCarrinho();
+        }
+
+        function removerItem(id) {
+            carrinho = carrinho.filter(item => item.id !== id);
+            renderCarrinho();
+        }
+
+        function renderCarrinho() {
+            const container = document.getElementById('itens-carrinho');
+            const totalEl = document.getElementById('total');
+            const qtdEl = document.getElementById('qtd-carrinho');
+            
+            if (carrinho.length === 0) {
+                container.innerHTML = '<p>Carrinho vazio</p>';
+                totalEl.textContent = '0.00';
+                qtdEl.textContent = '0';
+                return;
+            }
+
+            let total = 0;
+            let qtdTotal = 0;
+            
+            container.innerHTML = carrinho.map(item => {
+                total += item.preco * item.qtd;
+                qtdTotal += item.qtd;
+                return `
+                    <div class="carrinho-item">
+                        <div>
+                            <strong>${item.nome}</strong><br>
+                            <small>R$ ${item.preco.toFixed(2)} x ${item.qtd}</small>
+                        </div>
+                        <button onclick="removerItem(${item.id})">X</button>
+                    </div>
+                `;
+            }).join('');
+            
+            totalEl.textContent = total.toFixed(2);
+            qtdEl.textContent = qtdTotal;
+        }
+
+        function finalizarVenda() {
+            const nome = document.getElementById('nome').value;
+            const telefone = document.getElementById('telefone').value;
+            const carro = document.getElementById('carro').value;
+            const pagamento = document.getElementById('pagamento').value;
+            
+            if (carrinho.length === 0) {
+                alert('Adicione produtos ao carrinho primeiro!');
+                return;
+            }
+            
+            if (!nome || !telefone || !carro || !pagamento) {
+                alert('Preencha todos os dados do cliente!');
+                return;
+            }
+            
+            let total = carrinho.reduce((sum, item) => sum + item.preco * item.qtd, 0);
+            
+            const resumo = carrinho.map(item => `${item.qtd}x ${item.nome} - R$ ${(item.preco * item.qtd).toFixed(2)}`).join('\n');
+            
+            const mensagem = `*NOVO PEDIDO - BATERIAS ATENCIO*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${telefone}\n*Carro:* ${carro}\n\n*Itens:*\n${resumo}\n\n*Pagamento:* ${pagamento}\n*Total: R$ ${total.toFixed(2)}*`;
+            
+            alert('Pedido gerado com sucesso!\n\n' + mensagem);
+            
+            // Abre WhatsApp com o pedido pronto
+            const numeroLoja = '5583981374944'; // Trocar pelo número da loja
+            window.open(`https://wa.me/${numeroLoja}?text=${encodeURIComponent(mensagem)}`, '_blank');
+            
+            // Limpa tudo
+            carrinho = [];
+            renderCarrinho();
+            document.getElementById('nome').value = '';
+            document.getElementById('telefone').value = '';
+            document.getElementById('carro').value = '';
+            document.getElementById('pagamento').value = '';
+        }
+
+        // Inicia
+        renderProdutos();
+    </script>
+</body>
+</html>
