@@ -291,7 +291,7 @@
             
             const resumo = carrinho.map(item => `${item.qtd}x ${item.nome} - R$ ${(item.preco * item.qtd).toFixed(2)}`).join('\n');
             
-            const mensagem = `*NOVO PEDIDO - BATERIAS ATENCIO*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${telefone}\n*Carro:* ${carro}\n\n*Itens:*\n${resumo}\n\n*Pagamento:* ${pagamento}\n*Total: R$ ${total.toFixed(2)}*`;
+            const mensagem = `*NOVO PEDIDO - ATENCIO BATERIAS*\n\n*Cliente:* ${nome}\n*WhatsApp:* ${telefone}\n*Carro:* ${carro}\n\n*Itens:*\n${resumo}\n\n*Pagamento:* ${pagamento}\n*Total: R$ ${total.toFixed(2)}*`;
             
             alert('Pedido gerado com sucesso!\n\n' + mensagem);
             
